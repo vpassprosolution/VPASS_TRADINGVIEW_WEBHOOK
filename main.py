@@ -88,6 +88,12 @@ def receive_signal():
     take_profit2 = data.get("tp2", "N/A")
     take_profit3 = data.get("tp3", "N/A")
 
+    # Get all subscribed users for this specific instrument
+    subscribers = get_subscribers(instrument)
+
+    if not subscribers:
+        return jsonify({"message": f"No subscribers for {instrument}, signal not sent."}), 200
+
     # Format the signal message
     signal_message = f"""
 📢 *VPASS TRADING SIGNAL ALERT* 📢
@@ -105,17 +111,11 @@ def receive_signal():
 🎯 *Take Profit 3:* {take_profit3}  
 """
 
-    # Get all subscribed users for this specific instrument
-    subscribers = get_subscribers(instrument)
-
-    if not subscribers:
-        return jsonify({"message": "No subscribers to send the signal to."}), 200
-
     # Send message to each subscriber via Telegram
     for chat_id in subscribers:
         send_telegram_message(chat_id, signal_message)
 
-    return jsonify({"message": "Signal sent to subscribers", "subscribers": subscribers}), 200
+    return jsonify({"message": f"Signal sent to {len(subscribers)} subscribers for {instrument}.", "subscribers": subscribers}), 200
 
 # === Run Flask App ===
 if __name__ == '__main__':
