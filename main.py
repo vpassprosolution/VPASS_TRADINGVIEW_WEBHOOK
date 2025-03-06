@@ -30,35 +30,42 @@ def list_routes():
     """List all available API routes for debugging."""
     return jsonify([str(rule) for rule in app.url_map.iter_rules()])
 
-# === Subscription API Endpoints (Merged from api.py) ===
+# === Subscription API Endpoints (Fixed to Track Instruments) ===
 @app.route('/subscribe', methods=['POST'])
 def subscribe_user():
-    """Subscribe a user to receive signals."""
+    """Subscribe a user to a specific instrument."""
     data = request.json
     chat_id = data.get("chat_id")
+    instrument = data.get("instrument")
 
-    if not chat_id:
-        return jsonify({"error": "chat_id is required"}), 400
+    if not chat_id or not instrument:
+        return jsonify({"error": "chat_id and instrument are required"}), 400
 
-    add_subscriber(chat_id)
-    return jsonify({"message": f"User {chat_id} subscribed successfully"}), 200
+    add_subscriber(chat_id, instrument)
+    return jsonify({"message": f"User {chat_id} subscribed to {instrument} successfully"}), 200
 
 @app.route('/unsubscribe', methods=['POST'])
 def unsubscribe_user():
-    """Unsubscribe a user from receiving signals."""
+    """Unsubscribe a user from a specific instrument."""
     data = request.json
     chat_id = data.get("chat_id")
+    instrument = data.get("instrument")
 
-    if not chat_id:
-        return jsonify({"error": "chat_id is required"}), 400
+    if not chat_id or not instrument:
+        return jsonify({"error": "chat_id and instrument are required"}), 400
 
-    remove_subscriber(chat_id)
-    return jsonify({"message": f"User {chat_id} unsubscribed successfully"}), 200
+    remove_subscriber(chat_id, instrument)
+    return jsonify({"message": f"User {chat_id} unsubscribed from {instrument} successfully"}), 200
 
 @app.route('/subscribers', methods=['GET'])
 def list_subscribers():
-    """Get all subscribed users."""
-    subscribers = get_subscribers()
+    """Get all subscribed users for a specific instrument."""
+    instrument = request.args.get("instrument")
+
+    if not instrument:
+        return jsonify({"error": "instrument is required"}), 400
+
+    subscribers = get_subscribers(instrument)
     return jsonify({"subscribers": subscribers}), 200
 
 # === TradingView Webhook Endpoint ===
@@ -98,8 +105,8 @@ def receive_signal():
 🎯 *Take Profit 3:* {take_profit3}  
 """
 
-    # Get all subscribed users
-    subscribers = get_subscribers()
+    # Get all subscribed users for this specific instrument
+    subscribers = get_subscribers(instrument)
 
     if not subscribers:
         return jsonify({"message": "No subscribers to send the signal to."}), 200
