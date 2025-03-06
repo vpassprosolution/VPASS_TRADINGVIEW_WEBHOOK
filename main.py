@@ -1,3 +1,4 @@
+import os
 import requests
 from flask import Flask, request, jsonify
 from database import add_subscriber, remove_subscriber, get_subscribers
@@ -18,7 +19,18 @@ def send_telegram_message(chat_id, message):
     response = requests.post(url, json=payload)
     return response.json()
 
-# === Subscription API Endpoints ===
+# === Health Check and Debug Routes ===
+@app.route('/')
+def home():
+    """Health check endpoint to confirm Flask is running."""
+    return "VPASS Webhook is running!", 200
+
+@app.route('/routes')
+def list_routes():
+    """List all available API routes for debugging."""
+    return jsonify([str(rule) for rule in app.url_map.iter_rules()])
+
+# === Subscription API Endpoints (Merged from api.py) ===
 @app.route('/subscribe', methods=['POST'])
 def subscribe_user():
     """Subscribe a user to receive signals."""
@@ -100,4 +112,5 @@ def receive_signal():
 
 # === Run Flask App ===
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Use Railway-assigned port if available
+    app.run(host='0.0.0.0', port=port, debug=True)
