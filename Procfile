@@ -1,1 +1,1 @@
-"web: python main.py & python api.py" 
+web: python api.py && python main.py 
