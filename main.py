@@ -18,6 +18,38 @@ def send_telegram_message(chat_id, message):
     response = requests.post(url, json=payload)
     return response.json()
 
+# === Subscription API Endpoints ===
+@app.route('/subscribe', methods=['POST'])
+def subscribe_user():
+    """Subscribe a user to receive signals."""
+    data = request.json
+    chat_id = data.get("chat_id")
+
+    if not chat_id:
+        return jsonify({"error": "chat_id is required"}), 400
+
+    add_subscriber(chat_id)
+    return jsonify({"message": f"User {chat_id} subscribed successfully"}), 200
+
+@app.route('/unsubscribe', methods=['POST'])
+def unsubscribe_user():
+    """Unsubscribe a user from receiving signals."""
+    data = request.json
+    chat_id = data.get("chat_id")
+
+    if not chat_id:
+        return jsonify({"error": "chat_id is required"}), 400
+
+    remove_subscriber(chat_id)
+    return jsonify({"message": f"User {chat_id} unsubscribed successfully"}), 200
+
+@app.route('/subscribers', methods=['GET'])
+def list_subscribers():
+    """Get all subscribed users."""
+    subscribers = get_subscribers()
+    return jsonify({"subscribers": subscribers}), 200
+
+# === TradingView Webhook Endpoint ===
 @app.route('/webhook', methods=['POST'])
 def receive_signal():
     """Receive TradingView signals and send only to subscribed users."""
