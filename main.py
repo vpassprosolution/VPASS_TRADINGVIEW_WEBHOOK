@@ -6,7 +6,8 @@ from database import add_subscriber, remove_subscriber, get_subscribers
 app = Flask(__name__)
 
 # Telegram Bot Token
-BOT_TOKEN = "7900613582:AAGCwv6HCow334iKB4xWcyzvWj_hQBtmN4A"
+BOT_TOKEN = os.getenv("BOT_TOKEN", "7900613582:AAGCwv6HCow334iKB4xWcyzvWj_hQBtmN4A")
+
 
 def send_telegram_message(chat_id, message):
     """Send a message to a Telegram user."""
