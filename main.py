@@ -5,8 +5,8 @@ from database import add_subscriber, remove_subscriber, get_subscribers
 
 app = Flask(__name__)
 
-# Telegram Bot Token
-BOT_TOKEN = os.getenv("BOT_TOKEN", "7900613582:AAGCwv6HCow334iKB4xWcyzvWj_hQBtmN4A")
+# ✅ Telegram Bot Token from Railway ENV
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 
 def send_telegram_message(chat_id, message):
@@ -20,65 +20,52 @@ def send_telegram_message(chat_id, message):
     response = requests.post(url, json=payload)
     return response.json()
 
-# === Health Check and Debug Routes ===
+# === Health Check ===
 @app.route('/')
 def home():
-    """Health check endpoint to confirm Flask is running."""
-    return "VPASS Webhook is running!", 200
+    return "VESSA Webhook is running!", 200
 
 @app.route('/routes')
 def list_routes():
-    """List all available API routes for debugging."""
     return jsonify([str(rule) for rule in app.url_map.iter_rules()])
 
-# === Subscription API Endpoints (Fixed to Track Instruments) ===
+# === Subscribe API ===
 @app.route('/subscribe', methods=['POST'])
 def subscribe_user():
-    """Subscribe a user to a specific instrument."""
     data = request.json
     chat_id = data.get("chat_id")
     instrument = data.get("instrument")
-
     if not chat_id or not instrument:
         return jsonify({"error": "chat_id and instrument are required"}), 400
-
     add_subscriber(chat_id, instrument)
-    return jsonify({"message": f"User {chat_id} subscribed to {instrument} successfully"}), 200
+    return jsonify({"message": f"User {chat_id} subscribed to {instrument}"}), 200
 
 @app.route('/unsubscribe', methods=['POST'])
 def unsubscribe_user():
-    """Unsubscribe a user from a specific instrument."""
     data = request.json
     chat_id = data.get("chat_id")
     instrument = data.get("instrument")
-
     if not chat_id or not instrument:
         return jsonify({"error": "chat_id and instrument are required"}), 400
-
     remove_subscriber(chat_id, instrument)
-    return jsonify({"message": f"User {chat_id} unsubscribed from {instrument} successfully"}), 200
+    return jsonify({"message": f"User {chat_id} unsubscribed from {instrument}"}), 200
 
 @app.route('/subscribers', methods=['GET'])
 def list_subscribers():
-    """Get all subscribed users for a specific instrument."""
     instrument = request.args.get("instrument")
-
     if not instrument:
         return jsonify({"error": "instrument is required"}), 400
-
     subscribers = get_subscribers(instrument)
     return jsonify({"subscribers": subscribers}), 200
 
-# === TradingView Webhook Endpoint ===
+# === Webhook Signal from TradingView ===
 @app.route('/webhook', methods=['POST'])
 def receive_signal():
-    """Receive TradingView signals and send only to subscribed users."""
     data = request.json
-
     if not data:
         return jsonify({"error": "No data received"}), 400
 
-    # Extract signal data
+    # Extract from JSON
     instrument = data.get("instrument", "Unknown")
     signal_type = data.get("signal", "No signal provided")
     top_zone = data.get("top_zone", "N/A")
@@ -89,15 +76,13 @@ def receive_signal():
     take_profit2 = data.get("tp2", "N/A")
     take_profit3 = data.get("tp3", "N/A")
 
-    # Get all subscribed users for this specific instrument
     subscribers = get_subscribers(instrument)
-
     if not subscribers:
-        return jsonify({"message": f"No subscribers for {instrument}, signal not sent."}), 200
+        return jsonify({"message": f"No subscribers for {instrument}"}), 200
 
-    # Format the signal message
+    # ✅ VESSA Message Format
     signal_message = f"""
-📢 *VPASS TRADING SIGNAL ALERT* 📢
+📢 *VESSA TRADING SIGNAL ALERT* 📢
 
 🚀 *{instrument.upper()} SIGNAL FOR SUBSCRIBERS* 🚀
 
@@ -112,13 +97,12 @@ def receive_signal():
 🎯 *Take Profit 3:* {take_profit3}  
 """
 
-    # Send message to each subscriber via Telegram
     for chat_id in subscribers:
         send_telegram_message(chat_id, signal_message)
 
-    return jsonify({"message": f"Signal sent to {len(subscribers)} subscribers for {instrument}.", "subscribers": subscribers}), 200
+    return jsonify({"message": f"Signal sent to {len(subscribers)} subscribers", "subscribers": subscribers}), 200
 
-# === Run Flask App ===
+# === Launch
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Use Railway-assigned port if available
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
