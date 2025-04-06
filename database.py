@@ -14,7 +14,7 @@ def add_subscriber(chat_id, instrument):
 
     try:
         cur.execute(
-            "INSERT INTO subscribers (chat_id, instrument) VALUES (%s, %s) ON CONFLICT DO NOTHING;",
+            "INSERT INTO subscribers (chat_id, instrument) VALUES (%s, LOWER(%s)) ON CONFLICT DO NOTHING;",
             (chat_id, instrument)
         )
         conn.commit()
@@ -31,7 +31,7 @@ def remove_subscriber(chat_id, instrument):
 
     try:
         cur.execute(
-            "DELETE FROM subscribers WHERE chat_id = %s AND instrument = %s;",
+            "DELETE FROM subscribers WHERE chat_id = %s AND instrument = LOWER(%s);",
             (chat_id, instrument)
         )
         conn.commit()
@@ -47,7 +47,7 @@ def get_subscribers(instrument):
     cur = conn.cursor()
 
     try:
-        cur.execute("SELECT chat_id FROM subscribers WHERE instrument = %s;", (instrument,))
+        cur.execute("SELECT chat_id FROM subscribers WHERE LOWER(instrument) = LOWER(%s);", (instrument,))
         subscribers = [row[0] for row in cur.fetchall()]
         return subscribers
     except Exception as e:
