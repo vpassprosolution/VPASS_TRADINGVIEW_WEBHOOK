@@ -103,8 +103,8 @@ def receive_signal():
 
     # 🟢 Final Message Format
     signal_message = f"""
-VESSA HAVE SIGNAL FOR SUBSCRIBERS
-{emoji} {signal_type} detected {emoji}
+*VESSA HAVE SIGNAL FOR YOU*
+{emoji} Vessa {signal_type} detected {emoji}
 💰 Entry: {buy_limit}  
 📍 Top Zone: {top_zone}  
 📍 Bottom Zone: {bottom_zone}  
