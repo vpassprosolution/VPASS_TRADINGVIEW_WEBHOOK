@@ -104,13 +104,13 @@ def receive_signal():
 *Top Zone:* {top_zone:.2f}  
 *Bottom Zone:* {bottom_zone:.2f}  
 
-🎯*Entry:* {entry:.2f} 
-🚫*Stop Loss:* {sl:.2f}  
+🔲*Entry:* {entry:.2f} 
+🏴*Stop Loss:* {sl:.2f}  
 *Take Profit 1:* {tp1:.2f}  
 *Take Profit 2:* {tp2:.2f}  
 *Take Profit 3:* {tp3:.2f}  
 
-🧠 *Powered by _VESSA AI Agent_*
+🕶️ *Powered by VESSA AI Agent*
 """
 
     # Send to subscribers
