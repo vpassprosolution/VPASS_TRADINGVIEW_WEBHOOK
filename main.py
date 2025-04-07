@@ -98,11 +98,13 @@ def receive_signal():
 
     # Final message (cleaned pip text)
     signal_message = f"""
-🔔 *PREMIUM SIGNAL ({instrument.upper()}) ALERT*
-    {emoji} Vessa {signal_type} detected {emoji}
-🎯*Entry:* {entry:.2f}  
+🔔 *PREMIUM SIGNAL ({instrument.upper()}) ALERT*🔔
+   {emoji} Vessa {signal_type} detected {emoji}
+
 *Top Zone:* {top_zone:.2f}  
 *Bottom Zone:* {bottom_zone:.2f}  
+
+🎯*Entry:* {entry:.2f} 
 🚫*Stop Loss:* {sl:.2f}  
 *Take Profit 1:* {tp1:.2f}  
 *Take Profit 2:* {tp2:.2f}  
