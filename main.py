@@ -65,56 +65,53 @@ def receive_signal():
     if not data:
         return jsonify({"error": "No data received"}), 400
 
-    # Extract from JSON
+    # Extract data
     instrument = data.get("instrument", "Unknown")
     signal_type = data.get("signal", "No signal provided")
     buy_limit = data.get("buy_limit", "N/A")
-    
+
     try:
         entry = float(buy_limit)
     except:
         return jsonify({"error": "Invalid entry price"}), 400
 
-    # PIP Style for GOLD (1 pip = 0.10)
+    # GOLD pip style
     pip_value = 0.10
 
-    # === Auto-Calculated SL / TP / Zone
-    sl = entry - (30 * pip_value)
-    tp1 = entry + (30 * pip_value)
-    tp2 = entry + (50 * pip_value)
-    tp3 = entry + (70 * pip_value)
-    top_zone = entry + (10 * pip_value)
-    bottom_zone = entry - (10 * pip_value)
-
-    # Pip Calculations
-    sl_pips = round(abs(entry - sl) / pip_value)
-    tp1_pips = round(abs(tp1 - entry) / pip_value)
-    tp2_pips = round(abs(tp2 - entry) / pip_value)
-    tp3_pips = round(abs(tp3 - entry) / pip_value)
-
-    # Emoji Logic
+    # Logic for BUY or SELL
     if "bearish" in signal_type.lower():
         emoji = "🔴"
+        sl = entry + (30 * pip_value)
+        tp1 = entry - (30 * pip_value)
+        tp2 = entry - (50 * pip_value)
+        tp3 = entry - (70 * pip_value)
+        top_zone = entry + (10 * pip_value)
+        bottom_zone = entry - (10 * pip_value)
     else:
         emoji = "🟢"
+        sl = entry - (30 * pip_value)
+        tp1 = entry + (30 * pip_value)
+        tp2 = entry + (50 * pip_value)
+        tp3 = entry + (70 * pip_value)
+        top_zone = entry + (10 * pip_value)
+        bottom_zone = entry - (10 * pip_value)
 
-    # Final Message
+    # Final message (cleaned pip text)
     signal_message = f"""
-🔔*PREMIUM SIGNAL ({instrument.upper()}) ALERT*🔔
-
-{emoji} Vessa {signal_type} detected {emoji}
-💰 *Entry:* {entry:.2f}  
-Top Zone: {top_zone:.2f}  
-Bottom Zone: {bottom_zone:.2f}  
-🚫 *Stop Loss:* {sl:.2f} (-{sl_pips} pip)  
-*Take Profit 1:* {tp1:.2f} (+{tp1_pips} pip)  
-*Take Profit 2:* {tp2:.2f} (+{tp2_pips} pip)  
-*Take Profit 3:* {tp3:.2f} (+{tp3_pips} pip)
+🔔 *PREMIUM SIGNAL ({instrument.upper()}) ALERT*
+    {emoji} Vessa {signal_type} detected {emoji}
+🎯*Entry:* {entry:.2f}  
+*Top Zone:* {top_zone:.2f}  
+*Bottom Zone:* {bottom_zone:.2f}  
+🚫*Stop Loss:* {sl:.2f}  
+*Take Profit 1:* {tp1:.2f}  
+*Take Profit 2:* {tp2:.2f}  
+*Take Profit 3:* {tp3:.2f}  
 
 🧠 *Powered by VESSA AI Agent*
 """
 
-    # Send to all subscribers
+    # Send to subscribers
     subscribers = get_subscribers(instrument)
     if not subscribers:
         return jsonify({"message": f"No subscribers for {instrument}"}), 200
@@ -123,6 +120,7 @@ Bottom Zone: {bottom_zone:.2f}
         send_telegram_message(chat_id, signal_message)
 
     return jsonify({"message": f"Signal sent to {len(subscribers)} subscribers", "subscribers": subscribers}), 200
+
 
 # === Launch
 if __name__ == '__main__':
