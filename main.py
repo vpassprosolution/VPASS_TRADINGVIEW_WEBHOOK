@@ -98,7 +98,7 @@ def receive_signal():
 
     # Final message (cleaned pip text)
     signal_message = f"""
-🔔 *PREMIUM SIGNAL ({instrument.upper()}) ALERT*🔔
+♠️ *PREMIUM SIGNAL ({instrument.upper()}) ALERT* ♠️
    {emoji} Vessa {signal_type} detected {emoji}
 
 *Top Zone:* {top_zone:.2f}  
@@ -110,7 +110,7 @@ def receive_signal():
 *Take Profit 2:* {tp2:.2f}  
 *Take Profit 3:* {tp3:.2f}  
 
-🧠 *Powered by VESSA AI Agent*
+🧠 *Powered by _VESSA AI Agent_*
 """
 
     # Send to subscribers
