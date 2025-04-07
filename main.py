@@ -100,16 +100,16 @@ def receive_signal():
 
     # Final Message
     signal_message = f"""
-🔔*VESSA HAVE SIGNAL FOR YOU*🔔
+🔔*PREMIUM SIGNAL ({instrument.upper()}) ALERT*🔔
 
 {emoji} Vessa {signal_type} detected {emoji}
 💰 *Entry:* {entry:.2f}  
-📍 Top Zone: {top_zone:.2f}  
-📍 Bottom Zone: {bottom_zone:.2f}  
+Top Zone: {top_zone:.2f}  
+Bottom Zone: {bottom_zone:.2f}  
 🚫 *Stop Loss:* {sl:.2f} (-{sl_pips} pip)  
-🎯 *Take Profit 1:* {tp1:.2f} (+{tp1_pips} pip)  
-🎯 *Take Profit 2:* {tp2:.2f} (+{tp2_pips} pip)  
-🎯 *Take Profit 3:* {tp3:.2f} (+{tp3_pips} pip)
+*Take Profit 1:* {tp1:.2f} (+{tp1_pips} pip)  
+*Take Profit 2:* {tp2:.2f} (+{tp2_pips} pip)  
+*Take Profit 3:* {tp3:.2f} (+{tp3_pips} pip)
 
 🧠 *Powered by VESSA AI Agent*
 """
