@@ -110,7 +110,7 @@ def receive_signal():
 *Take Profit 2:* {tp2:.2f}  
 *Take Profit 3:* {tp3:.2f}  
 
-🕶️ *Powered by VESSA AI Agent*
+🖋️ *Powered by VESSA AI Agent©*
 """
 
     # Send to subscribers
